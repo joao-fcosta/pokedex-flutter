@@ -5,6 +5,7 @@ import { fetchPokemons } from "../services/pokemonService";
 import PokemonCard from "./PokemonCard";
 import PokeballLoader from "./PokeballLoader";
 import { toast } from "@/components/ui/use-toast";
+import { useIsMobile } from "../hooks/use-mobile";
 
 const PokemonTimeline: React.FC = () => {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
@@ -14,6 +15,7 @@ const PokemonTimeline: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loaderRef = useRef<HTMLDivElement | null>(null);
+  const isMobile = useIsMobile();
 
   const loadPokemons = useCallback(async () => {
     if (isLoading || !hasMore) return;
@@ -22,7 +24,8 @@ const PokemonTimeline: React.FC = () => {
     setHasError(false);
     
     try {
-      const limit = 20;
+      // Reduzir o limite para mobile para melhor performance
+      const limit = isMobile ? 10 : 20;
       const newPokemons = await fetchPokemons(offset, limit);
       
       if (newPokemons.length === 0) {
@@ -35,14 +38,14 @@ const PokemonTimeline: React.FC = () => {
       console.error("Failed to fetch Pokemons:", error);
       setHasError(true);
       toast({
-        title: "Error",
-        description: "Failed to load Pokémons. Please try again.",
+        title: "Erro",
+        description: "Falha ao carregar Pokémons. Tente novamente.",
         variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
-  }, [offset, isLoading, hasMore]);
+  }, [offset, isLoading, hasMore, isMobile]);
 
   useEffect(() => {
     loadPokemons();
@@ -59,7 +62,7 @@ const PokemonTimeline: React.FC = () => {
           loadPokemons();
         }
       },
-      { threshold: 1.0 }
+      { threshold: 0.5 }
     );
 
     observerRef.current = observer;
@@ -76,7 +79,7 @@ const PokemonTimeline: React.FC = () => {
   }, [loadPokemons, isLoading]);
 
   return (
-    <div className="relative pokemon-timeline py-10 px-4">
+    <div className="relative pokemon-timeline py-6 px-2 sm:px-4">
       <div className="max-w-4xl mx-auto">
         {pokemons.map((pokemon, index) => (
           <PokemonCard
@@ -87,7 +90,7 @@ const PokemonTimeline: React.FC = () => {
         ))}
         <div
           ref={loaderRef}
-          className="flex justify-center py-10 w-full"
+          className="flex justify-center py-6 w-full"
         >
           {isLoading ? (
             <PokeballLoader />
@@ -96,11 +99,11 @@ const PokemonTimeline: React.FC = () => {
               onClick={() => loadPokemons()}
               className="bg-pokemon-red text-white px-6 py-3 rounded-full font-bold hover:bg-opacity-90 transition-all"
             >
-              Try Again
+              Tentar Novamente
             </button>
           ) : !hasMore ? (
             <p className="text-center text-gray-500">
-              You've caught 'em all! No more Pokémon to load.
+              Você pegou todos! Não há mais Pokémon para carregar.
             </p>
           ) : null}
         </div>
