@@ -40,10 +40,10 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, position }) => {
 
   return (
     <div
-      className={`flex mb-8 w-full ${
-        isMobile ? "px-2" : `sm:w-[calc(50%-20px)] ${
-          position === "left" ? "sm:mr-auto sm:pl-0" : "sm:ml-auto sm:pr-0"
-        }`
+      className={`flex mb-8 w-full max-w-sm mx-auto ${
+        !isMobile ? `sm:w-[calc(50%-20px)] ${
+          position === "left" ? "sm:mr-auto sm:ml-[20%]" : "sm:ml-auto sm:mr-[20%]"
+        }` : ""
       }`}
     >
       <Card className="overflow-hidden w-full bg-white hover:shadow-lg transition-all duration-300 transform hover:scale-105">

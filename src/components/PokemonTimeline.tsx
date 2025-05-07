@@ -80,7 +80,7 @@ const PokemonTimeline: React.FC = () => {
 
   return (
     <div className="relative pokemon-timeline py-6 px-2 sm:px-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto flex flex-col items-center">
         {pokemons.map((pokemon, index) => (
           <PokemonCard
             key={pokemon.id}
