@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/pokemon.dart';
 import '../utils/pokemon_service.dart';
 import '../widgets/pokemon_card.dart';
+import 'pokemon_detail_screen.dart';
 
 class TimelineScreen extends StatefulWidget {
   @override
@@ -49,6 +50,18 @@ class _TimelineScreenState extends State<TimelineScreen> {
     }
   }
 
+  void _navigateToPokemonDetail(Pokemon pokemon, int index) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PokemonDetailScreen(
+          pokemon: pokemon,
+          index: index,
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _scrollController.dispose();
@@ -64,7 +77,11 @@ class _TimelineScreenState extends State<TimelineScreen> {
         itemCount: _pokemons.length + (_isLoading ? 1 : 0),
         itemBuilder: (context, index) {
           if (index < _pokemons.length) {
-            return PokemonCard(pokemon: _pokemons[index], index: index);
+            return PokemonCard(
+              pokemon: _pokemons[index],
+              index: index,
+              onTap: () => _navigateToPokemonDetail(_pokemons[index], index),
+            );
           } else {
             return Padding(
               padding: const EdgeInsets.all(16),
