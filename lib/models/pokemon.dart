@@ -1,3 +1,4 @@
+
 class Pokemon {
   final String name;
   final String imageUrl;
@@ -5,6 +6,9 @@ class Pokemon {
   final int height;
   final int weight;
   final int baseExperience;
+  final List<String> abilities;
+  final Map<String, int> stats;
+  final int id;
 
   Pokemon({
     required this.name,
@@ -13,9 +17,17 @@ class Pokemon {
     required this.height,
     required this.weight,
     required this.baseExperience,
+    required this.abilities,
+    required this.stats,
+    required this.id,
   });
 
   factory Pokemon.fromJson(Map<String, dynamic> json) {
+    final Map<String, int> statsMap = {};
+    for (var stat in json['stats']) {
+      statsMap[stat['stat']['name']] = stat['base_stat'];
+    }
+
     return Pokemon(
       name: json['name'],
       imageUrl: json['sprites']['front_default'] ?? '',
@@ -24,7 +36,12 @@ class Pokemon {
           .toList(),
       height: json['height'],
       weight: json['weight'],
-      baseExperience: json['base_experience'],
+      baseExperience: json['base_experience'] ?? 0,
+      abilities: (json['abilities'] as List)
+          .map((e) => e['ability']['name'] as String)
+          .toList(),
+      stats: statsMap,
+      id: json['id'],
     );
   }
 }
