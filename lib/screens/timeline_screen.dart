@@ -44,7 +44,22 @@ class _TimelineScreenState extends State<TimelineScreen> {
         _hasMore = newPokemons.isNotEmpty;
       });
     } catch (e) {
-      print("Erro: $e");
+      showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text("Erro"),
+        content: Text("Não foi possível carregar os pokémons."),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _loadMorePokemons(); // tenta de novo
+            },
+            child: Text("Tentar Novamente"),
+          ),
+        ],
+      )
+      );
     } finally {
       setState(() => _isLoading = false);
     }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart'; // precisa importar para usar Widget
 import 'package:http/http.dart' as http;
 import '../models/pokemon.dart';
 
@@ -9,7 +10,7 @@ class PokemonService {
     final url = 'https://pokeapi.co/api/v2/pokemon?offset=$offset&limit=$limit';
     final response = await http.get(Uri.parse(url));
 
-    if (response.statusCode == 200) {
+    if (response.statusCode != 200) {
       final List results = jsonDecode(response.body)['results'];
 
       final pokemons = await Future.wait(results.map((pokemon) async {
@@ -29,7 +30,29 @@ class PokemonService {
 
       return pokemons.whereType<Pokemon>().toList();
     } else {
-      throw Exception('Erro ao carregar pokémons');
+      throw Exception('Falha ao carregar os pokémons');
     }
+  }
+
+  /// Esta função pode ser chamada na UI ao capturar a exceção lançada
+  static Widget failureScreen(VoidCallback tryAgain) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Erro!'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Não foi possível carregar os dados'),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: tryAgain,
+              child: const Text("Tentar Novamente"),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
