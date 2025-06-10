@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'screens/home_screen.dart';
 import 'screens/timeline_screen.dart';
 
 void main() {
@@ -18,6 +19,12 @@ void main() {
         ),
       ),
     ),
-    home: TimelineScreen(),
+    home: HomePage(),
+    routes: {
+      '/pokemons': (_) => TimelineScreen(),
+      /* '/trainers': (_) => const TrainersPage(),
+      '/types': (_) => const TypesPage(),
+      '/gyms': (_) => const GymsPage(), */
+    },
   ));
 }

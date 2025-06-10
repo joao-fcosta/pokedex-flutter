@@ -10,9 +10,9 @@ class PokemonService {
     final url = 'https://pokeapi.co/api/v2/pokemon?offset=$offset&limit=$limit';
     final response = await http.get(Uri.parse(url));
 
-    if (response.statusCode != 200) {
+    if (response.statusCode == 200) {
       final List results = jsonDecode(response.body)['results'];
-
+      
       final pokemons = await Future.wait(results.map((pokemon) async {
         final name = pokemon['name'];
         if (_cache.containsKey(name)) return _cache[name]!;
@@ -32,27 +32,5 @@ class PokemonService {
     } else {
       throw Exception('Falha ao carregar os pokémons');
     }
-  }
-
-  /// Esta função pode ser chamada na UI ao capturar a exceção lançada
-  static Widget failureScreen(VoidCallback tryAgain) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Erro!'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Não foi possível carregar os dados'),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: tryAgain,
-              child: const Text("Tentar Novamente"),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

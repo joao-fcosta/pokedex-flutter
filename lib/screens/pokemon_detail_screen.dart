@@ -79,14 +79,14 @@ class PokemonDetailScreen extends StatelessWidget {
                   BoxShadow(
                     color: Colors.black12,
                     blurRadius: 12,
-                    offset: Offset(0, 8),
+                    offset: Offset(0, 8), 
                   )
                 ],
               ),
               child: Column(
                 children: [
                   CircleAvatar(
-                    radius: 80,
+                    radius: 100,
                     backgroundColor: Colors.grey.shade100,
                     child: Image.network(
                       pokemon.imageUrl,
