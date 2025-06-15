@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/pokemon.dart';
-import '../utils/getAll.dart';
-import '../widgets/pokemon_card.dart';
-import 'pokemon_detail_screen.dart';
+import '../utils/pokemon_service.dart';
+import 'erro_screen.dart';
+import 'pokemon_detail_screen.dart'; // Importe sua tela de detalhes
 
 class TimelineScreen extends StatefulWidget {
   @override
@@ -11,11 +11,13 @@ class TimelineScreen extends StatefulWidget {
 
 class _TimelineScreenState extends State<TimelineScreen> {
   List<Pokemon> _pokemons = [];
+  List<Pokemon> _filteredPokemons = [];
   bool _isLoading = false;
   int _offset = 0;
-  final int _limit = 10;
+  final int _limit = 20;
   final ScrollController _scrollController = ScrollController();
   bool _hasMore = true;
+  String _searchText = "";
 
   @override
   void initState() {
@@ -36,45 +38,41 @@ class _TimelineScreenState extends State<TimelineScreen> {
     setState(() => _isLoading = true);
     try {
       final newPokemons =
-          await PokemonService.fetchPokemons(offset: _offset, limit: _limit);
+          await PokemonService.getAllPokemons(offset: _offset, limit: _limit);
 
       setState(() {
         _pokemons.addAll(newPokemons);
         _offset += _limit;
         _hasMore = newPokemons.isNotEmpty;
+        _filterPokemons();
       });
     } catch (e) {
-      showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text("Erro"),
-        content: Text("Não foi possível carregar os pokémons."),
-        actions: [
-          TextButton(
-            onPressed: () {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ErroScreen(
+            mensagem: "Não foi possível carregar os pokémons.",
+            onRetry: () {
               Navigator.of(context).pop();
-              _loadMorePokemons(); // tenta de novo
+              _loadMorePokemons();
             },
-            child: Text("Tentar Novamente"),
           ),
-        ],
-      )
+        ),
       );
     } finally {
       setState(() => _isLoading = false);
     }
   }
 
-  void _navigateToPokemonDetail(Pokemon pokemon, int index) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PokemonDetailScreen(
-          pokemon: pokemon,
-          index: index,
-        ),
-      ),
-    );
+  void _filterPokemons() {
+    setState(() {
+      if (_searchText.isEmpty) {
+        _filteredPokemons = List.from(_pokemons);
+      } else {
+        _filteredPokemons = _pokemons
+            .where((p) => p.name.toLowerCase().contains(_searchText.toLowerCase()))
+            .toList();
+      }
+    });
   }
 
   @override
@@ -86,24 +84,55 @@ class _TimelineScreenState extends State<TimelineScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Pokémon Timeline")),
-      body: ListView.builder(
-        controller: _scrollController,
-        itemCount: _pokemons.length + (_isLoading ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index < _pokemons.length) {
-            return PokemonCard(
-              pokemon: _pokemons[index],
-              index: index,
-              onTap: () => _navigateToPokemonDetail(_pokemons[index], index),
-            );
-          } else {
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          }
-        },
+      appBar: AppBar(title: Text("Pokémons")),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: 'Pesquisar Pokémon',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.search),
+              ),
+              onChanged: (value) {
+                _searchText = value;
+                _filterPokemons();
+              },
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: _filteredPokemons.length + (_isLoading ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index < _filteredPokemons.length) {
+                  return ListTile(
+                    leading: Text(
+                      "#${_filteredPokemons[index].id}",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    title: Text(_filteredPokemons[index].name),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => PokemonDetailScreen(
+                            pokemonId: _filteredPokemons[index].id,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

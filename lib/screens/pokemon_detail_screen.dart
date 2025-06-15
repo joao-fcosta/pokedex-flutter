@@ -1,16 +1,289 @@
-
 import 'package:flutter/material.dart';
 import '../models/pokemon.dart';
+import '../utils/pokemon_service.dart';
+import 'erro_screen.dart';
 
-class PokemonDetailScreen extends StatelessWidget {
-  final Pokemon pokemon;
-  final int index;
+class PokemonDetailScreen extends StatefulWidget {
+  final int pokemonId;
 
   const PokemonDetailScreen({
-    super.key,
-    required this.pokemon,
-    required this.index,
-  });
+    Key? key,
+    required this.pokemonId,
+  }) : super(key: key);
+
+  @override
+  State<PokemonDetailScreen> createState() => _PokemonDetailScreenState();
+}
+
+class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+  late Future<Pokemon> _pokemonFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _pokemonFuture = PokemonService.getPokemonById(widget.pokemonId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Pokemon>(
+      future: _pokemonFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text("Carregando..."),
+              backgroundColor: Colors.red.shade600,
+              foregroundColor: Colors.white,
+            ),
+            body: const Center(child: CircularProgressIndicator()),
+          );
+        } else if (snapshot.hasError) {
+          return ErroScreen(
+            mensagem: "Erro ao carregar detalhes do Pokémon.",
+            onRetry: () {
+              setState(() {
+                _pokemonFuture = PokemonService.getPokemonById(widget.pokemonId);
+              });
+            },
+          );
+        } else if (!snapshot.hasData) {
+          return ErroScreen(
+            mensagem: "Pokémon não encontrado.",
+          );
+        }
+
+        final pokemon = snapshot.data!;
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(pokemon.name.toUpperCase()),
+            backgroundColor: Colors.red.shade600,
+            foregroundColor: Colors.white,
+          ),
+          backgroundColor: const Color(0xFFF3F4F6),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                // Card principal com informações básicas
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 12,
+                        offset: Offset(0, 8),
+                      )
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 100,
+                        backgroundColor: Colors.grey.shade100,
+                        child: Image.network(
+                          pokemon.imageUrl,
+                          width: 120,
+                          height: 120,
+                          fit: BoxFit.contain,
+                          errorBuilder: (ctx, err, _) => const Icon(Icons.image_not_supported, size: 60),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'POKÉMON #${pokemon.id}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: Colors.blueAccent,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        pokemon.name.toUpperCase(),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 28,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Tipos',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 12,
+                        children: pokemon.types.map((type) {
+                          final color = _getTypeColor(type);
+                          return Chip(
+                            label: Text(
+                              type.toUpperCase(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            backgroundColor: color,
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Card com informações físicas
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 12,
+                        offset: Offset(0, 8),
+                      )
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Características Físicas',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _statCard("Altura", "${pokemon.height / 10} m", Icons.height),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _statCard("Peso", "${pokemon.weight / 10} kg", Icons.fitness_center),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      _statCard("Experiência Base", "${pokemon.baseExperience} XP", Icons.star),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Card com habilidades
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 12,
+                        offset: Offset(0, 8),
+                      )
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Habilidades',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: pokemon.abilities.map((ability) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade50,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: Colors.blue.shade200),
+                            ),
+                            child: Text(
+                              ability.replaceAll('-', ' ').toUpperCase(),
+                              style: TextStyle(
+                                color: Colors.blue.shade700,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Card com estatísticas de combate
+                if (pokemon.stats.isNotEmpty)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 12,
+                          offset: Offset(0, 8),
+                        )
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Estatísticas de Combate',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        ...pokemon.stats.entries.map((entry) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: _buildStatBar(entry.key, entry.value),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   Color _getTypeColor(String type) {
     switch (type) {
@@ -39,13 +312,13 @@ class PokemonDetailScreen extends StatelessWidget {
       case 'flying':
         return Colors.indigo;
       case 'rock':
-        return Colors.brown.shade400;
+        return Colors.brown;
       case 'ghost':
         return Colors.deepPurple;
       case 'dragon':
-        return Colors.deepPurple.shade700;
+        return Colors.deepPurple;
       case 'dark':
-        return Colors.grey.shade800;
+        return Colors.grey;
       case 'steel':
         return Colors.blueGrey;
       case 'fairy':
@@ -53,237 +326,6 @@ class PokemonDetailScreen extends StatelessWidget {
       default:
         return Colors.grey;
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(pokemon.name.toUpperCase()),
-        backgroundColor: Colors.red.shade600,
-        foregroundColor: Colors.white,
-      ),
-      backgroundColor: Color(0xFFF3F4F6),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // Card principal com informações básicas
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 12,
-                    offset: Offset(0, 8), 
-                  )
-                ],
-              ),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 100,
-                    backgroundColor: Colors.grey.shade100,
-                    child: Image.network(
-                      pokemon.imageUrl,
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.contain,
-                      errorBuilder: (ctx, err, _) => Icon(Icons.image_not_supported, size: 60),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'POKÉMON #${pokemon.id}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: Colors.blueAccent,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    pokemon.name.toUpperCase(),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 28,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Tipos',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 12,
-                    children: pokemon.types.map((type) {
-                      final color = _getTypeColor(type);
-                      return Chip(
-                        label: Text(
-                          type.toUpperCase(),
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        backgroundColor: color,
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            
-            // Card com informações físicas
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 12,
-                    offset: Offset(0, 8),
-                  )
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Características Físicas',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _statCard("Altura", "${pokemon.height / 10} m", Icons.height),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _statCard("Peso", "${pokemon.weight / 10} kg", Icons.fitness_center),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  _statCard("Experiência Base", "${pokemon.baseExperience} XP", Icons.star),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Card com habilidades
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 12,
-                    offset: Offset(0, 8),
-                  )
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Habilidades',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: pokemon.abilities.map((ability) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.blue.shade200),
-                        ),
-                        child: Text(
-                          ability.replaceAll('-', ' ').toUpperCase(),
-                          style: TextStyle(
-                            color: Colors.blue.shade700,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Card com estatísticas de combate
-            if (pokemon.stats.isNotEmpty)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 12,
-                      offset: Offset(0, 8),
-                    )
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Estatísticas de Combate',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    ...pokemon.stats.entries.map((entry) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: _buildStatBar(entry.key, entry.value),
-                      );
-                    }).toList(),
-                  ],
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
   }
 
   Widget _statCard(String title, String value, IconData icon) {

@@ -11,11 +11,11 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.red.shade50,
-      appBar: AppBar(
-        title: const Text('PokeDex Suprema'),
+      /* appBar: AppBar(
+        title: const Text(''),
         centerTitle: true,
         backgroundColor: Colors.red.shade400,
-      ),
+      ), */
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.count(
@@ -24,9 +24,7 @@ class HomePage extends StatelessWidget {
           crossAxisSpacing: 16,
           children: [
             _buildCard(context, Icons.catching_pokemon, 'Pokémons', '/pokemons'),
-            _buildCard(context, Icons.person, 'Treinadores', '/trainers'),
-            _buildCard(context, Icons.bolt, 'Tipos', '/types'),
-            _buildCard(context, Icons.sports_martial_arts, 'Ginásios', '/gyms'),
+            _buildCard(context, Icons.bolt, 'Tipos', '/types')
           ],
         ),
       ),

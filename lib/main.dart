@@ -22,9 +22,8 @@ void main() {
     home: HomePage(),
     routes: {
       '/pokemons': (_) => TimelineScreen(),
-      /* '/trainers': (_) => const TrainersPage(),
-      '/types': (_) => const TypesPage(),
-      '/gyms': (_) => const GymsPage(), */
+      /*
+      '/types': (_) => const TypesPage(), */
     },
   ));
 }
