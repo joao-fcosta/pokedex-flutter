@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/pokemon.dart';
-import '../utils/pokemon_service.dart';
+import '../utils/getAll.dart';
 import '../widgets/pokemon_card.dart';
 import 'pokemon_detail_screen.dart';
 

@@ -16,7 +16,6 @@ class PokemonService {
       final pokemons = await Future.wait(results.map((pokemon) async {
         final name = pokemon['name'];
         if (_cache.containsKey(name)) return _cache[name]!;
-
         final detailResponse = await http.get(Uri.parse(pokemon['url']));
         if (detailResponse.statusCode == 200) {
           final parsed = jsonDecode(detailResponse.body);
