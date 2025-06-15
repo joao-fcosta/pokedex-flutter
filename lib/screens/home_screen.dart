@@ -9,34 +9,34 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.red.shade50,
-      /* appBar: AppBar(
-        title: const Text(''),
-        centerTitle: true,
-        backgroundColor: Colors.red.shade400,
-      ), */
-      body: Padding(
+  return Scaffold(
+    body: Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("/images/home.jpeg"), 
+          fit: BoxFit.cover, 
+        ),
+      ),
+      child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.count(
           crossAxisCount: 2,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
           children: [
-            _buildCard(context, Icons.catching_pokemon, 'Pokémons', '/pokemons'),
-            _buildCard(context, Icons.bolt, 'Tipos', '/types')
+            buttonNav(context, Icons.catching_pokemon, 'Pokémons', '/pokemons'),
+            buttonNav(context, Icons.bolt, 'Tipos', '/types'),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildCard(BuildContext context, IconData icon, String label, String route) {
+    ),
+  );
+}
+  Widget buttonNav(BuildContext context, IconData icon, String label, String route) {
     return GestureDetector(
       onTap: () => _navigateTo(context, route),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           boxShadow: const [
             BoxShadow(color: Colors.black12, blurRadius: 10),
@@ -45,10 +45,10 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 48, color: Colors.red.shade300),
+            Icon(icon, size: 48, color: Colors.red),
             const SizedBox(height: 10),
             Text(label,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
             ),
           ],
         ),

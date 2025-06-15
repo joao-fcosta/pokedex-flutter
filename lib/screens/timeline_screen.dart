@@ -86,54 +86,54 @@ class _TimelineScreenState extends State<TimelineScreen> {
     return Scaffold(
       appBar: AppBar(title: Text("Pokémons")),
       body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: 'Pesquisar Pokémon',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.search),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  labelText: 'Pesquisar Pokémon',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.search),
+                ),
+                onChanged: (value) {
+                  _searchText = value;
+                  _filterPokemons();
+                },
               ),
-              onChanged: (value) {
-                _searchText = value;
-                _filterPokemons();
-              },
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              itemCount: _filteredPokemons.length + (_isLoading ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index < _filteredPokemons.length) {
-                  return ListTile(
-                    leading: Text(
-                      "#${_filteredPokemons[index].id}",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    title: Text(_filteredPokemons[index].name),
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => PokemonDetailScreen(
-                            pokemonId: _filteredPokemons[index].id,
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                itemCount: _filteredPokemons.length + (_isLoading ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index < _filteredPokemons.length) {
+                    return ListTile(
+                      leading: Text(
+                        "#${_filteredPokemons[index].id}",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      title: Text(_filteredPokemons[index].name),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => PokemonDetailScreen(
+                              pokemonId: _filteredPokemons[index].id,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                } else {
-                  return Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                }
-              },
+                        );
+                      },
+                    );
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                },
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
     );
   }
 }
