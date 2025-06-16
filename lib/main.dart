@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
           foregroundColor: Colors.white,
         ),
       ),
+      themeMode: ThemeMode.system,
       home: HomePage(),
     routes: {
       '/pokemons': (_) => TimelineScreen(),

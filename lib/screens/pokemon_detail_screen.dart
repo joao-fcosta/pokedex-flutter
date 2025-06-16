@@ -57,10 +57,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
         return Scaffold(
           appBar: AppBar(
             title: Text(pokemon.name.toUpperCase()),
-            backgroundColor: Colors.red.shade600,
-            foregroundColor: Colors.white,
+            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+            foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
           ),
-          backgroundColor: const Color(0xFFF3F4F6),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -70,7 +70,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -105,10 +105,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                       const SizedBox(height: 8),
                       Text(
                         pokemon.name.toUpperCase(),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 28,
-                        ),
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 20),
                       Text(
@@ -146,7 +143,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -191,7 +188,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -246,7 +243,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
