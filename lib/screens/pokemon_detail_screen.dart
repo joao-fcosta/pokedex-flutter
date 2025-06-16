@@ -40,7 +40,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
           );
         } else if (snapshot.hasError) {
           return ErroScreen(
-            mensagem: "Erro ao carregar detalhes do Pokémon.",
+            mensagem: snapshot.error.toString().replaceFirst('Exception: ', ''),
             onRetry: () {
               setState(() {
                 _pokemonFuture = PokemonService.getPokemonById(widget.pokemonId);

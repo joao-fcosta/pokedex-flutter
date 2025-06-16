@@ -9,22 +9,27 @@ class PokemonService {
 
     if (response.statusCode == 200) {
       final List results = jsonDecode(response.body)['results'];
-      // Supondo que seu model Pokemon tenha um construtor que aceite apenas name e url/id
       return results.map<Pokemon>((pokemon) => Pokemon.fromBasicJson(pokemon)).toList();
     } else {
-      throw Exception('Falha ao carregar os pokémons');
+      throw Exception('Erro ${response.statusCode}: Não foi possível carregar a lista de pokémons.');
     }
   }
 
   static Future<Pokemon> getPokemonById(int id) async {
     final url = 'https://pokeapi.co/api/v2/pokemon/$id';
-    final response = await http.get(Uri.parse(url));
+    try {
+      final response = await http.get(Uri.parse(url));
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return Pokemon.fromJson(data);
-    } else {
-      throw Exception('Falha ao carregar o pokémon de id $id');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return Pokemon.fromJson(data);
+      } else if (response.statusCode == 404) {
+        throw Exception('Pokémon com ID $id não encontrado.');
+      } else {
+        throw Exception('Erro ${response.statusCode}: Não foi possível carregar o pokémon de id $id.');
+      }
+    } catch (e) {
+      throw Exception('Erro ao buscar detalhes do pokémon: ${e.toString()}');
     }
   }
 }

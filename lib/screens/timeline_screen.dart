@@ -50,7 +50,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => ErroScreen(
-            mensagem: "Não foi possível carregar os pokémons.",
+            mensagem: e.toString(),
             onRetry: () {
               Navigator.of(context).pop();
               _loadMorePokemons();

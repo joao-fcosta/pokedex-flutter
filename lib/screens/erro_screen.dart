@@ -34,20 +34,27 @@ class ErroScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.error_outline, size: 80, color: Colors.red.shade300),
+                Icon(Icons.error_outline, size: 80, color: Colors.red.shade500),
                 const SizedBox(height: 24),
                 Text(
                   mensagem,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
                 ),
                 const SizedBox(height: 24),
                 if (onRetry != null)
                   ElevatedButton.icon(
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Tentar Novamente'),
+                    icon: const Icon(Icons.refresh, color: Colors.black,),
+                    label: const Text(
+                      'Calma, agora vai!',
+                      style: TextStyle(
+                        color: Colors.black, 
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red.shade400,
+                      backgroundColor: Colors.red.shade500,
                     ),
                     onPressed: onRetry,
                   ),
