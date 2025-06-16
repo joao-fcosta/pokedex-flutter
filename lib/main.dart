@@ -1,6 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/timeline_screen.dart';
+import 'screens/types_screen.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -22,8 +24,7 @@ void main() {
     home: HomePage(),
     routes: {
       '/pokemons': (_) => TimelineScreen(),
-      /*
-      '/types': (_) => const TypesPage(), */
+      '/types': (_) => TypesScreen(),
     },
   ));
 }
