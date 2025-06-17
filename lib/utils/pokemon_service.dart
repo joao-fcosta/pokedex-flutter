@@ -25,6 +25,9 @@ class PokemonService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        if (data.isEmpty) {
+        throw Exception('Certeza que ele existe? Não consegui encontrar :(');
+      }
         return Pokemon.fromJson(data);
       } else if (response.statusCode == 404) {
         throw Exception('Pokémon com ID $id não encontrado.');

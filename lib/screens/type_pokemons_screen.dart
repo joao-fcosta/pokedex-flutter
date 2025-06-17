@@ -1,8 +1,6 @@
-
 import 'package:flutter/material.dart';
 import '../models/pokemon_type.dart';
 import '../utils/types_service.dart';
-import '../widgets/pokemon_card.dart';
 import 'erro_screen.dart';
 import 'pokemon_detail_screen.dart';
 
@@ -93,47 +91,52 @@ class _TypePokemonsScreenState extends State<TypePokemonsScreen> {
               });
             },
           );
-        } else if (!snapshot.hasData) {
-          return ErroScreen(
-            mensagem: "Tipo não encontrado.",
+        } else if (!snapshot.hasData || snapshot.data!.pokemons.isEmpty) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text("Tipo ${widget.typeName.toUpperCase()}"),
+              backgroundColor: _getTypeColor(),
+              foregroundColor: Colors.white,
+            ),
+            body: const Center(
+              child: Text(
+                "Nenhum Pokémon encontrado para este tipo.",
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
           );
         }
 
-        final typeData = snapshot.data!;
+        final pokemons = snapshot.data!.pokemons;
+
         return Scaffold(
           appBar: AppBar(
             title: Text("Tipo ${widget.typeName.toUpperCase()}"),
             backgroundColor: _getTypeColor(),
             foregroundColor: Colors.white,
           ),
-          backgroundColor: const Color(0xFFF3F4F6),
-          body: typeData.pokemons.isEmpty
-              ? const Center(
-                  child: Text(
-                    "Nenhum Pokémon encontrado para este tipo.",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: typeData.pokemons.length,
-                  itemBuilder: (context, index) {
-                    final pokemon = typeData.pokemons[index];
-                    return PokemonCard(
-                      pokemon: pokemon,
-                      index: index,
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => PokemonDetailScreen(
-                              pokemonId: pokemon.id,
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
+          body: ListView.builder(
+            itemCount: pokemons.length,
+            itemBuilder: (context, index) {
+              final pokemon = pokemons[index];
+              return ListTile(
+                leading: Text(
+                  "#${pokemon.id}",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
+                title: Text(pokemon.name),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => PokemonDetailScreen(
+                        pokemonId: pokemon.id,
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         );
       },
     );
