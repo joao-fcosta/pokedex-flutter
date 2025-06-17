@@ -10,9 +10,9 @@ class TypePokemonsScreen extends StatefulWidget {
   final String typeName;
 
   const TypePokemonsScreen({
-    Key? key,
+    super.key,
     required this.typeName,
-  }) : super(key: key);
+  });
 
   @override
   State<TypePokemonsScreen> createState() => _TypePokemonsScreenState();

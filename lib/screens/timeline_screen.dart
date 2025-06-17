@@ -5,12 +5,14 @@ import 'erro_screen.dart';
 import 'pokemon_detail_screen.dart'; // Importe sua tela de detalhes
 
 class TimelineScreen extends StatefulWidget {
+  const TimelineScreen({super.key});
+
   @override
   State<TimelineScreen> createState() => _TimelineScreenState();
 }
 
 class _TimelineScreenState extends State<TimelineScreen> {
-  List<Pokemon> _pokemons = [];
+  final List<Pokemon> _pokemons = [];
   List<Pokemon> _filteredPokemons = [];
   bool _isLoading = false;
   int _offset = 0;
@@ -50,7 +52,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => ErroScreen(
-            mensagem: e.toString(),
+            mensagem: e.toString().replaceFirst('Exception: ', ''),
             onRetry: () {
               Navigator.of(context).pop();
               _loadMorePokemons();

@@ -6,10 +6,10 @@ class ErroScreen extends StatelessWidget {
   final VoidCallback? onRetry;
 
   const ErroScreen({
-    Key? key,
+    super.key,
     this.mensagem = 'Ocorreu um erro inesperado.',
     this.onRetry,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

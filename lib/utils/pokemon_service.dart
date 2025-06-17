@@ -6,12 +6,15 @@ class PokemonService {
   static Future<List<Pokemon>> getAllPokemons({int offset = 0, int limit = 20}) async {
     final url = 'https://pokeapi.co/api/v2/pokemon?offset=$offset&limit=$limit';
     final response = await http.get(Uri.parse(url));
-
+    
     if (response.statusCode == 200) {
       final List results = jsonDecode(response.body)['results'];
+      if (results.isEmpty) {
+        throw Exception('Nenhum pokémon encontrado.');
+      }
       return results.map<Pokemon>((pokemon) => Pokemon.fromBasicJson(pokemon)).toList();
     } else {
-      throw Exception('Erro ${response.statusCode}: Não foi possível carregar a lista de pokémons.');
+      throw Exception('Erro http ${response.statusCode}: Não foi possível carregar a lista de pokémons.');
     }
   }
 

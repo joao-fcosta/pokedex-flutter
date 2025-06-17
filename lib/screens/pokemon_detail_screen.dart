@@ -7,9 +7,9 @@ class PokemonDetailScreen extends StatefulWidget {
   final int pokemonId;
 
   const PokemonDetailScreen({
-    Key? key,
+    super.key,
     required this.pokemonId,
-  }) : super(key: key);
+  });
 
   @override
   State<PokemonDetailScreen> createState() => _PokemonDetailScreenState();
@@ -270,7 +270,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                             padding: const EdgeInsets.only(bottom: 16),
                             child: _buildStatBar(entry.key, entry.value),
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                   ),

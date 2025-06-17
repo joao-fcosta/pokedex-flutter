@@ -7,6 +7,8 @@ import 'erro_screen.dart';
 import 'type_pokemons_screen.dart';
 
 class TypesScreen extends StatefulWidget {
+  const TypesScreen({super.key});
+
   @override
   State<TypesScreen> createState() => _TypesScreenState();
 }
