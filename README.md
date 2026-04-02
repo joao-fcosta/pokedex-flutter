@@ -28,14 +28,3 @@ Inclui suporte a modo escuro, tratamento de erros amigável e navegação fluida
    ```bash
    flutter run
    ```
-
-## 📚 Aprendizado
-
-Se você é novo no Flutter, confira estes recursos para começar:
-
-- [Lab: Escreva seu primeiro app Flutter](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Exemplos úteis de Flutter](https://docs.flutter.dev/cookbook)
-
-Para mais ajuda com o desenvolvimento Flutter, veja a
-[documentação online](https://docs.flutter.dev/), que oferece tutoriais,
-amostras, orientações sobre desenvolvimento móvel e uma referência completa da API.
